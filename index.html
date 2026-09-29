@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Ejercicio de Realidad Aumentada Interactiva</title>
+  
+  <!-- Librería A-Frame para renderizado 3D -->
+  <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+  <!-- Librería AR.js para Realidad Aumentada Web -->
+  <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    /* Panel de controles sobre la pantalla de RA */
+    .ar-controls {
+      position: absolute;
+      bottom: 25px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-ar {
+      padding: 12px 24px;
+      font-size: 16px;
+      font-weight: bold;
+      color: #ffffff;
+      background: linear-gradient(135deg, #007bff, #0056b3);
+      border: none;
+      border-radius: 25px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+      cursor: pointer;
+      transition: transform 0.1s ease;
+    }
+
+    .btn-ar:active {
+      transform: scale(0.95);
+    }
+
+    .instructions {
+      color: #ffffff;
+      background-color: rgba(0, 0, 0, 0.6);
+      padding: 6px 14px;
+      border-radius: 12px;
+      font-size: 13px;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Interfaz de usuario flotante -->
+  <div class="ar-controls">
+    <div class="instructions">Apunta la cámara al marcador HIRO y haz clic en la figura o el botón</div>
+    <button id="btnCambiar" class="btn-ar">Cambiar Color</button>
+  </div>
+
+  <!-- Escena de Realidad Aumentada -->
+  <a-scene 
+    embedded 
+    arjs="sourceType: webcam; debugUIEnabled: false;"
+    cursor="rayOrigin: mouse"
+    raycaster="objects: .clickable">
+
+    <!-- Marcador tipo HIRO -->
+    <a-marker preset="hiro">
+      
+      <!-- Cubo 3D Interactivo -->
+      <a-box 
+        id="cuboInteractivo" 
+        class="clickable"
+        position="0 0.5 0" 
+        rotation="0 45 0" 
+        color="#4CC3D9"
+        animation="property: rotation; to: 0 405 0; loop: true; dur: 6000; easing: linear">
+      </a-box>
+
+      <!-- Texto descriptivo en RA -->
+      <a-text 
+        value="¡Toca el cubo!" 
+        position="-0.8 1.4 0" 
+        color="#FFFFFF" 
+        scale="1.2 1.2 1.2">
+      </a-text>
+
+    </a-marker>
+
+    <!-- Cámara con soporte para eventos de clic/toque -->
+    <a-entity camera></a-entity>
+  </a-scene>
+
+  <!-- Lógica de interacción -->
+  <script>
+    const cubo = document.getElementById('cuboInteractivo');
+    const boton = document.getElementById('btnCambiar');
+
+    // Paleta de colores para alternar
+    const colores = ['#4CC3D9', '#FF3B30', '#34C759', '#FFCC00', '#AF52DE', '#FF9500'];
+    let indiceColor = 0;
+
+    function cambiarColor() {
+      indiceColor = (indiceColor + 1) % colores.length;
+      cubo.setAttribute('color', colores[indiceColor]);
+    }
+
+    // 1. Evento de clic/tap en el botón en pantalla
+    boton.addEventListener('click', cambiarColor);
+
+    // 2. Evento de clic/tap directo sobre el cubo 3D en Realidad Aumentada
+    cubo.addEventListener('click', cambiarColor);
+  </script>
+
+</body>
+</html>
